@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Visual de planilha de custos em tons quentes: fundo areia de "área de trabalho", folhas cor de papel
+ * com grade fina, cabeçalhos de coluna bege, números em fonte mono alinhados à
+ * direita, verde = entrada, vermelho = saída. Cantos praticamente retos.
+ */
+@layer base {
+  :root {
+    --background: 36 24% 92%;
+    --foreground: 25 22% 14%;
+    --card: 40 45% 99%;
+    --card-foreground: 25 22% 14%;
+    --muted: 38 30% 95%;
+    --muted-foreground: 28 12% 40%;
+    --accent: 22 48% 29%;
+    --accent-foreground: 40 45% 98%;
+    --border: 34 22% 83%;
+    --input: 32 18% 74%;
+    --ring: 24 55% 40%;
+    --radius: 3px;
+
+    --positive: 138 45% 28%;
+    --negative: 8 66% 40%;
+    --warning: 34 85% 32%;
+    --header: 24 16% 16%;
+    /* linha em foco / em edição nas tabelas */
+    --highlight: 38 75% 93%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code,
+  kbd {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-3 text-sm rounded-sm border border-input bg-card text-foreground hover:bg-muted transition-colors disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply bg-accent text-accent-foreground border-accent hover:bg-accent/90;
+  }
+  .btn-danger {
+    @apply text-negative border-input hover:bg-negative/5 hover:border-negative/40;
+  }
+  .btn-sm {
+    @apply h-7 px-2 text-xs;
+  }
+  /* botão só-texto das linhas da tabela (editar / apagar) */
+  .link-action {
+    @apply text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2 disabled:opacity-50;
+  }
+  .link-danger {
+    @apply text-xs text-muted-foreground hover:text-negative hover:underline underline-offset-2;
+  }
+  .input {
+    @apply w-full h-8 px-2 text-sm rounded-sm border border-input bg-card focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring;
+  }
+  .card {
+    @apply rounded-sm border border-border bg-card p-4;
+  }
+  .kbd {
+    @apply inline-block min-w-[1.4rem] px-1 py-px text-center rounded-sm border border-input bg-card text-[11px] font-mono text-foreground;
+  }
+  .tabnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- planilha ---- */
+  .sheet {
+    @apply border border-border bg-card rounded-sm overflow-hidden;
+  }
+  .sheet-title {
+    @apply flex items-center justify-between gap-3 px-3 py-2 border-b border-border bg-card;
+  }
+  .sheet-title h2,
+  .sheet-title .title {
+    @apply text-[13px] font-semibold text-foreground;
+  }
+  .sheet-head {
+    @apply grid gap-3 px-3 py-1.5 bg-muted border-b border-border text-[11px] font-medium uppercase tracking-wide text-muted-foreground;
+  }
+  .sheet-row {
+    @apply grid gap-3 px-3 py-2 items-center border-b border-border last:border-b-0 text-sm even:bg-muted/40 hover:bg-highlight;
+  }
+  .sheet-empty {
+    @apply px-3 py-6 text-center text-sm text-muted-foreground;
+  }
+  .num {
+    @apply font-mono text-right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pos {
+    color: hsl(var(--positive));
+  }
+  .neg {
+    color: hsl(var(--negative));
+  }
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+  .page-title {
+    @apply text-lg font-semibold tracking-tight;
+  }
+  .tab {
+    @apply px-3 h-8 text-sm border-b-2 border-transparent text-muted-foreground hover:text-foreground;
+  }
+  .tab-active {
+    @apply border-accent text-foreground font-medium;
+  }
+}
