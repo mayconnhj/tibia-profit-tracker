@@ -2,7 +2,7 @@
 
 > Controle financeiro para jogadores de Tibia: registra hunts, quests, service em TC, drops e gastos, e mostra quanto cada atividade realmente rende — em gold e em reais.
 
-**🔗 Demo:** https://tibia-profit-tracker-one.vercel.app *(acesso com login — uso pessoal)*
+**🔗 Demo:** https://tibia-profit-tracker-one.vercel.app *(crie sua conta grátis — cada conta vê só os próprios dados)*
 
 ![React](https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -44,7 +44,7 @@ Esse app junta tudo num lugar só e responde essas duas perguntas.
 
 **Sem backend próprio.** O frontend fala direto com o Postgres do Supabase via `supabase-js`. Para um app de um usuário isso elimina um servidor inteiro pra manter, e a segurança fica no banco (abaixo), não no código do cliente.
 
-**Segurança no banco, não no frontend.** A anon key do Supabase vai junto no bundle de qualquer site — então ela não pode ser a barreira. O app usa **Supabase Auth** (login com e-mail e senha) e **Row Level Security** em todas as tabelas: só a role `authenticated` lê e escreve. A view de totais usa `security_invoker` para não furar o RLS, e o cadastro público fica desligado. Ver [`006_enable_auth_rls.sql`](supabase/migrations/006_enable_auth_rls.sql).
+**Segurança no banco, não no frontend.** A anon key do Supabase vai junto no bundle de qualquer site — então ela não pode ser a barreira. O app usa **Supabase Auth** (login com e-mail e senha) e **Row Level Security** em todas as tabelas: cada linha tem um dono (`user_id`) e as policies só deixam cada conta ler e escrever o que é dela — inclusive conferindo que a sessão, o item ou a despesa pertencem a um personagem/atividade da mesma conta. A view de totais usa `security_invoker` para não furar o RLS. Ver [`007_per_user_data.sql`](supabase/migrations/007_per_user_data.sql).
 
 **Regras de negócio no Postgres.** A taxa TC→gold de cada mês pode ser editada até 7 dias depois do mês fechar; depois disso um **trigger** trava a linha e rejeita qualquer `UPDATE`. Assim o histórico não muda por acidente, mesmo que o frontend tenha um bug. Ver [`004_enforce_rate_lock.sql`](supabase/migrations/004_enforce_rate_lock.sql).
 
@@ -81,8 +81,9 @@ Esse app junta tudo num lugar só e responde essas duas perguntas.
 | `004_enforce_rate_lock.sql` | trava de verdade a taxa de meses fechados |
 | `005_activity_position.sql` | ordem manual das atividades |
 | `006_enable_auth_rls.sql` | liga RLS e libera só usuários logados |
+| `007_per_user_data.sql` | dados separados por conta + atividades iniciais pra contas novas |
 
-Depois, em **Authentication → Users → Add user**, crie seu usuário (marque *Auto confirm*) e, em **Sign In / Providers**, desligue *Allow new users to sign up*.
+Antes da 007, crie sua conta em **Authentication → Users → Add user** (marque *Auto confirm*): a 007 entrega os dados que já existem para a única conta cadastrada. Depois, em **Sign In / Providers**, deixe *Allow new users to sign up* ligado e, em **URL Configuration**, coloque a URL do site em *Site URL* (é pra lá que o link de confirmação de e-mail leva).
 
 **2. Variáveis de ambiente**
 

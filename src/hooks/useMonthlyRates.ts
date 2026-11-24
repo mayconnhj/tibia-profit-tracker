@@ -36,9 +36,13 @@ export function useUpsertRate() {
       tc_to_gold: number;
       tc_to_brl: number;
     }) => {
+      // a taxa é por conta (007_per_user_data.sql); o RLS rejeita user_id de outra pessoa
+      const { data: auth } = await supabase.auth.getSession();
+      const user_id = auth.session?.user.id;
+      if (!user_id) throw new Error('Sessão expirada. Entre de novo.');
       const { data, error } = await supabase
         .from('monthly_rates')
-        .upsert(input, { onConflict: 'year,month' })
+        .upsert({ ...input, user_id }, { onConflict: 'user_id,year,month' })
         .select('*')
         .single();
       if (error) throw error;
